@@ -1,0 +1,8 @@
+Django==4.2
+djangorestframework==3.14.0
+djangorestframework-simplejwt==5.2.2
+PyJWT==2.8.0
+python-dotenv==1.0.0
+mysqlclient==2.2.0    # Use this if using MySQL
+djongo==1.3.6  # MongoDB adapter for Django
+pymongo==4.5.0 # MongoDB driver
