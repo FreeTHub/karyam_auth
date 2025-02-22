@@ -37,10 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'authentication',
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'authentication',
+    'utils',
+    'djongo',
+
 ]
 
 MIDDLEWARE = [
@@ -51,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'authentication.middleware.APIGatewayMiddleware', 
 ]
 
 ROOT_URLCONF = 'karyam_auth.urls'
@@ -77,10 +81,23 @@ WSGI_APPLICATION = 'karyam_auth.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'NAME': 'karyam_domain',
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': 'mongodb+srv://manojdb:santramanoj@cluster0.q9f02.mongodb.net/karyam_domain?retryWrites=true&w=majority',
+            'username': 'manojdb',  # Optional (Already in the URL)
+            'password': 'santramanoj',  # Optional (Already in the URL)
+            'authSource': 'admin',  # Optional if authentication is enabled
+        }
     }
 }
 
@@ -125,3 +142,66 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+import os
+import json
+from datetime import datetime
+
+LOG_DIR = os.path.join(BASE_DIR, 'logs')
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
+class JsonFormatter:
+    def format(self, record):
+        log_entry = {
+            "timestamp": datetime.utcfromtimestamp(record.created).isoformat() + "Z",
+            "level": record.levelname,
+            "module": record.name,
+            "event": record.msg,
+            # "ip_address": getattr(record, "ip_address", "N/A"),  # Add IP if available
+            # "username": getattr(record, "username", "N/A"),  # Add user if available
+            # "status": getattr(record, "status", "N/A")
+        }
+        return json.dumps(log_entry)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'json': {
+            '()': JsonFormatter,  # Custom JSON formatter
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIR, 'authentication.log'),
+            'formatter': 'json',
+        },
+    },
+
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIR, 'utils.log'),
+            'formatter': 'json',
+        },
+    },
+
+    'loggers': {
+        'authentication': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    'loggers': {
+        'utils': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+    },
+}
