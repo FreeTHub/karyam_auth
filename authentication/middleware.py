@@ -9,10 +9,12 @@ from authentication.models import KeysDocument
 from datetime import datetime
 User = get_user_model()
 import logging
+
 logger = logging.getLogger("authentication")
 
 class APIGatewayMiddleware:
     logger.info("API Gateway Middleware")
+    # auth_logger.info("API Gateway Middleware auth_logger")
     """
     Middleware to validate API Gateway requests.
     Ensures the request contains a valid gateway token, timestamp, and service name.

@@ -143,65 +143,74 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-import os
-import json
-from datetime import datetime
+# import os
+# import json
+# from datetime import datetime
 
-LOG_DIR = os.path.join(BASE_DIR, 'logs')
-if not os.path.exists(LOG_DIR):
-    os.makedirs(LOG_DIR)
+# LOG_DIR = os.path.join(BASE_DIR, 'logs')
+# if not os.path.exists(LOG_DIR):
+#     os.makedirs(LOG_DIR)
 
-class JsonFormatter:
-    def format(self, record):
-        log_entry = {
-            "timestamp": datetime.utcfromtimestamp(record.created).isoformat() + "Z",
-            "level": record.levelname,
-            "module": record.name,
-            "event": record.msg,
-            # "ip_address": getattr(record, "ip_address", "N/A"),  # Add IP if available
-            # "username": getattr(record, "username", "N/A"),  # Add user if available
-            # "status": getattr(record, "status", "N/A")
-        }
-        return json.dumps(log_entry)
+# class JsonFormatter:
+#     def format(self, record):
+#         log_entry = {
+#             "timestamp": datetime.utcfromtimestamp(record.created).isoformat() + "Z",
+#             "level": record.levelname,
+#             "module": record.name,
+#             "event": record.msg,
+#             # "ip_address": getattr(record, "ip_address", "N/A"),  # Add IP if available
+#             # "username": getattr(record, "username", "N/A"),  # Add user if available
+#             # "status": getattr(record, "status", "N/A")
+#         }
+#         return json.dumps(log_entry)
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'json': {
-            '()': JsonFormatter,  # Custom JSON formatter
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIR, 'authentication.log'),
-            'formatter': 'json',
-        },
-    },
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'json': {
+#             '()': JsonFormatter,  # Custom JSON formatter
+#         },
+#     },
+#     'handlers': {
+#         'file': {
+#             'level': 'INFO',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(LOG_DIR, 'authentication.log'),
+#             'formatter': 'json',
+#         },
+#     },
 
-    'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIR, 'utils.log'),
-            'formatter': 'json',
-        },
-    },
+#     'handlers': {
+#         'file': {
+#             'level': 'INFO',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(LOG_DIR, 'utils.log'),
+#             'formatter': 'json',
+#         },
+#     },
 
-    'loggers': {
-        'authentication': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-    'loggers': {
-        'utils': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-    },
-    },
-}
+#     'loggers': {
+#         'authentication': {
+#             'handlers': ['file'],
+#             'level': 'INFO',
+#             'propagate': False,
+#         },
+#     'loggers': {
+#         'utils': {
+#             'handlers': ['file'],
+#             'level': 'INFO',
+#             'propagate': False,
+#         },
+#     },
+#     },
+# }
+
+import logging.config
+from karyam_auth.loggers import LOGGING_CONFIG  
+
+LOGGING_CONFIG = None  #
+LOGGING = LOGGING_CONFIG if LOGGING_CONFIG else {}  # Assign correctly to avoid None
+
+if LOGGING:  
+    logging.config.dictConfig(LOGGING)
