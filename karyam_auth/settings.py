@@ -40,9 +40,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'djongo',
     'authentication',
     'utils',
-    'djongo',
+    'user',
 
 ]
 

@@ -32,6 +32,7 @@ class APIGatewayMiddleware:
        
         logger.info(f"secret_key ===> {secret_key}")
         gateway_token = request.headers.get("jwtGatewayToken")
+        logger.info(f"gateway_token ===> {gateway_token}")
         # service_name = request.headers.get("serviceName")
         # timestamp = request.headers.get("expiresDateTimeStamp")
         payload = jwt.decode(gateway_token, secret_key, algorithms=["HS256"])  # Adjust algorithm if needed
